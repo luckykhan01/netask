@@ -1,6 +1,9 @@
 package mminc.netask.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import mminc.netask.exception.ResourceNotFoundException;
+import mminc.netask.exception.ValidationException;
 import mminc.netask.model.*;
 import mminc.netask.repository.OrderRepository;
 import mminc.netask.repository.ProductRepository;
@@ -17,6 +20,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class OrderServiceImp implements OrderService {
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
@@ -71,17 +75,18 @@ public class OrderServiceImp implements OrderService {
             throw new ValidationException("Product not found in order");
         }
 
-        orderRepository.save(order);
+        return orderRepository.save(order);
     }
 
     @Override
     public BigDecimal calculateOrderTotal(Long orderId) {
         Order order = orderRepository.findById(orderId).
-                orElseThrow(() -> ResourceNotFoundException("Order not found"));
+                orElseThrow(() -> new ResourceNotFoundException("Order not found"));
 
         return order.getProducts().stream().map(Product::getPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
+    @Override
     public List<Order> getUserOrders(Long userId) {
         if (!userRepository.existsById(userId)) {
             throw new ResourceNotFoundException("User with ID" + userId + "not found");
@@ -90,5 +95,31 @@ public class OrderServiceImp implements OrderService {
         List<Order> orders = orderRepository.findByUserIdCreatedAtDesc(userId);
 
         return orders != null ? orders : Collections.emptyList();
+    }
+
+    @Override
+    public Order updateOrderStatus(Long orderId, OrderStatus newStatus) {
+        log.info("Updating status for order from {} to {}", orderId, newStatus);
+
+        Order order = orderRepository.findById(orderId).
+                orElseThrow(() -> new ResourceNotFoundException("Order not found"));
+
+        OrderStatus currStatus = order.getStatus();
+
+        if (!isValidT(currStatus, newStatus)) {
+            throw new ValidationException("Cannot transition from %s to %s", currStatus, newStatus);
+        }
+
+        order.setStatus(newStatus);
+
+        log.info("Updated status of order {} from {} to {}", order, currStatus, newStatus);
+
+        return orderRepository.save(order);
+    }
+
+    public boolean isValidT(OrderStatus from, OrderStatus to) {
+        return (from == OrderStatus.NEW && to == OrderStatus.PAID) ||
+                (from == OrderStatus.PAID && to == OrderStatus.SHIPPED) ||
+                (from == OrderStatus.SHIPPED && to == OrderStatus.COMPLETED);
     }
 }
