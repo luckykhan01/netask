@@ -8,6 +8,8 @@ public interface OrderService {
     Order addProductToOrder(Long orderId, Long productId);
     Order removeProductFromOrder(Long orderId, Long productId);
     Order updateOrderStatus(Long orderId, OrderStatus newStatus);
+    Order getOrderById(Long id);
+    List<Order> getAllOrders();
     BigDecimal calculateOrderTotal(Long orderId);
     List<Order> getUserOrders(Long userId);
 }

@@ -120,4 +120,15 @@ public class OrderServiceImp implements OrderService {
                 (from == OrderStatus.PAID && to == OrderStatus.SHIPPED) ||
                 (from == OrderStatus.SHIPPED && to == OrderStatus.COMPLETED);
     }
+
+    @Override
+    public Order getOrderById(Long id) {
+        return orderRepository.findById(id).
+                orElseThrow(() -> new ResourceNotFoundException("Order with id " + id + " not found"));
+    }
+
+    @Override
+    public List<Order> getAllOrders() {
+        return orderRepository.findAll();
+    }
 }

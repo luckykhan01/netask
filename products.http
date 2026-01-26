@@ -1,0 +1,32 @@
+POST http://localhost:8080/api/products
+Content-Type: application/json
+
+{
+  "name": "MacBook M1",
+  "price": 999.90
+}
+
+###
+POST http://localhost:8080/api/products
+Content-Type: application/json
+
+{
+  "name": "AirPods Pro",
+  "price": 79.90
+}
+
+###
+
+POST http://localhost:8080/api/products
+Content-Type: application/json
+
+{
+"name": "Asus '24 inch monitor",
+"price": 299.90
+}
+
+### ALL PRODUCTS
+GET http://localhost:8080/api/products
+
+### GET ID
+GET http://localhost:8080/api/products/3

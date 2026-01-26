@@ -1,0 +1,34 @@
+POST http://localhost:8080/api/orders?userId=1
+Content-Type: application/json
+
+[1, 2, 3]
+
+###
+
+GET http://localhost:8080/api/orders/1
+
+###
+
+POST http://localhost:8080/api/orders?userId=3
+Content-Type: application/json
+
+[3]
+
+### FIX
+
+GET http://localhost:8080/api/orders/3
+
+### ADDITION OF PRODUCTS TO ORDER (FIX)
+
+POST http://localhost:8080/api/orders/2/products/2
+
+### SUM (WORKS)
+
+GET http://localhost:8080/api/orders/1/total
+
+### EMPTY
+
+POST http://localhost:8080/api/orders?userId=1
+Content-Type: application/json
+
+[]

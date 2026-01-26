@@ -1,0 +1,26 @@
+POST http://localhost:8080/api/users
+Content-Type: application/json
+
+{
+  "name": "Иван Иванов",
+  "email": "ivan@example.com"
+}
+
+### ASSEM CREATION
+
+POST http://localhost:8080/api/users
+Content-Type: application/json
+
+{
+  "name": "Асем Шейк",
+  "email": "assem@ex.com"
+}
+
+### ALL USERS
+GET http://localhost:8080/api/users
+
+### GET ID
+GET http://localhost:8080/api/users/2
+
+###
+DELETE http://localhost:8080/api/users/2
