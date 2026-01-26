@@ -8,10 +8,8 @@ import mminc.netask.model.*;
 import mminc.netask.repository.OrderRepository;
 import mminc.netask.repository.ProductRepository;
 import mminc.netask.repository.UserRepository;
-import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.method.MethodValidationException;
 
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -92,7 +90,7 @@ public class OrderServiceImp implements OrderService {
             throw new ResourceNotFoundException("User with ID" + userId + "not found");
         }
 
-        List<Order> orders = orderRepository.findByUserIdCreatedAtDesc(userId);
+        List<Order> orders = orderRepository.findByUserIdOrderByCreatedAtDesc(userId);
 
         return orders != null ? orders : Collections.emptyList();
     }
