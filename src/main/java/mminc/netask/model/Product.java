@@ -1,5 +1,6 @@
 package mminc.netask.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Generated;
@@ -26,5 +27,6 @@ public class Product {
     private BigDecimal price;
 
     @ManyToMany(mappedBy = "products")
+    @JsonIgnore
     private List<Order> orders = new ArrayList<>();
 }

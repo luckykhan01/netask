@@ -16,11 +16,21 @@ Content-Type: application/json
   "email": "assem@ex.com"
 }
 
+###
+
+POST http://localhost:8080/api/users
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "email": "johndoe@ex.com"
+}
+
 ### ALL USERS
 GET http://localhost:8080/api/users
 
 ### GET ID
-GET http://localhost:8080/api/users/2
+GET http://localhost:8080/api/users/4
 
 ###
 DELETE http://localhost:8080/api/users/2
