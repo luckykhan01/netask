@@ -16,7 +16,7 @@ Content-Type: application/json
 
 ### FIXED
 
-GET http://localhost:8080/api/orders/3
+GET http://localhost:8080/api/orders/user/3
 
 ### ADDITION OF PRODUCTS TO ORDER (FIXED)
 
@@ -32,3 +32,7 @@ POST http://localhost:8080/api/orders?userId=2
 Content-Type: application/json
 
 []
+
+###
+
+PATCH http://localhost:8080/api/orders/1/status?orderStatus=COMPLETED

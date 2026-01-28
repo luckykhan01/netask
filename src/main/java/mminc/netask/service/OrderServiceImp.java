@@ -15,6 +15,8 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
+import static java.util.stream.Collectors.toSet;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -26,13 +28,20 @@ public class OrderServiceImp implements OrderService {
 
     @Override
     public Order createOrder(Long userId, List<Long> productIds) {
-        User user = userRepository.findById(userId).
-                orElseThrow(() -> new ResourceNotFoundException("User not found."));
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found."));
 
         List<Product> products = productRepository.findAllById(productIds);
 
+        List<Long> uniqueIds = productIds.stream().distinct().toList();
+
         if (products.isEmpty()) {
             throw new ValidationException("Order must contain at least one product.");
+        }
+
+        if (products.size() != uniqueIds.size()) {
+            var foundIds = products.stream().map(Product::getId).collect(toSet());
+            var missing = uniqueIds.stream().filter(id -> !foundIds.contains(id)).toList();
+            throw new ResourceNotFoundException("Products not found: " + missing);
         }
 
         Order order = new Order();
@@ -45,11 +54,11 @@ public class OrderServiceImp implements OrderService {
 
     @Override
     public Order addProductToOrder(Long orderId, Long productId) {
-        Order order = orderRepository.findById(orderId).
-                orElseThrow(() -> new ResourceNotFoundException("Order not found."));
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found."));
 
-        Product product = productRepository.findById(productId).
-                orElseThrow(() -> new ResourceNotFoundException("Product not found."));
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found."));
 
         if (!order.getProducts().contains(product)) {
             order.getProducts().add(product);
@@ -60,8 +69,8 @@ public class OrderServiceImp implements OrderService {
 
     @Override
     public Order removeProductFromOrder(Long orderId, Long productId) {
-        Order order = orderRepository.findById(orderId).
-                orElseThrow(() -> new ResourceNotFoundException("Order not found."));
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found."));
 
         if (!productRepository.existsById(productId)) {
             throw new ResourceNotFoundException("Product not found");
@@ -78,8 +87,8 @@ public class OrderServiceImp implements OrderService {
 
     @Override
     public BigDecimal calculateOrderTotal(Long orderId) {
-        Order order = orderRepository.findById(orderId).
-                orElseThrow(() -> new ResourceNotFoundException("Order not found"));
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
 
         return order.getProducts().stream().map(Product::getPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
@@ -99,8 +108,8 @@ public class OrderServiceImp implements OrderService {
     public Order updateOrderStatus(Long orderId, OrderStatus newStatus) {
         log.info("Updating status for order from {} to {}", orderId, newStatus);
 
-        Order order = orderRepository.findById(orderId).
-                orElseThrow(() -> new ResourceNotFoundException("Order not found"));
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
 
         OrderStatus currStatus = order.getStatus();
 
@@ -123,8 +132,8 @@ public class OrderServiceImp implements OrderService {
 
     @Override
     public Order getOrderById(Long id) {
-        return orderRepository.findById(id).
-                orElseThrow(() -> new ResourceNotFoundException("Order with id " + id + " not found"));
+        return orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Order with id " + id + " not found"));
     }
 
     @Override
